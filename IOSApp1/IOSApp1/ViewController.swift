@@ -8,7 +8,8 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
+    // UI elements
     private let imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -64,6 +65,7 @@ class ViewController: UIViewController {
         return label
     }()
     
+    // Properties for managing photos and slideshow
     private var photoURLs: [String] = []
     private var currentIndex: Int = 0
     private var slideshowTimer: Timer?
@@ -77,6 +79,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemCyan
         
+        // Add UI elements to the view
         view.addSubview(imageView)
         imageView.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
         imageView.center = view.center
@@ -88,10 +91,12 @@ class ViewController: UIViewController {
         view.addSubview(photoIndexLabel)
         view.addSubview(slideshowStatusLabel)
         
+        // Fetch photo URLs and update the initial photo
         fetchPhotoURLs {
             self.updatePhoto()
         }
         
+        // Add target actions for buttons
         randomButton.addTarget(self, action: #selector(didTapRandomButton), for: .touchUpInside)
         nextButton.addTarget(self, action: #selector(didTapNextButton), for: .touchUpInside)
         prevButton.addTarget(self, action: #selector(didTapPrevButton), for: .touchUpInside)
@@ -99,23 +104,27 @@ class ViewController: UIViewController {
     }
     
     @objc func didTapRandomButton() {
+        // Fetch and display a random photo
         getRandomPhoto()
         view.backgroundColor = colors.randomElement()
     }
     
     @objc func didTapNextButton() {
+        // Show the next photo in the array
         guard !photoURLs.isEmpty else { return }
         currentIndex = (currentIndex + 1) % photoURLs.count
         updatePhoto()
     }
     
     @objc func didTapPrevButton() {
+        // Show the previous photo in the array
         guard !photoURLs.isEmpty else { return }
         currentIndex = (currentIndex - 1 + photoURLs.count) % photoURLs.count
         updatePhoto()
     }
     
     @objc func didTapSlideshowButton() {
+        // Start or stop the slideshow
         if isSlideshowRunning {
             stopSlideshow()
         } else {
@@ -124,6 +133,7 @@ class ViewController: UIViewController {
     }
     
     private func startSlideshow() {
+        // Start a timer to show the next photo every 2 seconds
         slideshowTimer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(showNextPhoto), userInfo: nil, repeats: true)
         slideshowStatusLabel.text = "Slideshow: Running"
         slideshowButton.setTitle("Stop Slideshow", for: .normal)
@@ -131,6 +141,7 @@ class ViewController: UIViewController {
     }
     
     private func stopSlideshow() {
+        // Stop the slideshow timer
         slideshowTimer?.invalidate()
         slideshowTimer = nil
         slideshowStatusLabel.text = "Slideshow: Stopped"
@@ -139,6 +150,7 @@ class ViewController: UIViewController {
     }
     
     @objc private func showNextPhoto() {
+        // Show the next photo in the array
         guard !photoURLs.isEmpty else { return }
         currentIndex = (currentIndex + 1) % photoURLs.count
         updatePhoto()
@@ -146,6 +158,8 @@ class ViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        // Layout the UI elements
         randomButton.frame = CGRect(
             x: 30,
             y: view.frame.size.height - 250 - view.safeAreaInsets.bottom,
@@ -190,6 +204,7 @@ class ViewController: UIViewController {
     }
     
     private func updatePhoto() {
+        // Update the image view with the current photo
         guard !photoURLs.isEmpty else { return }
         let urlString = photoURLs[currentIndex]
         guard let url = URL(string: urlString) else {
@@ -233,6 +248,7 @@ class ViewController: UIViewController {
     }
     
     private func fetchPhotoURLs(completion: @escaping () -> Void) {
+        // Fetch a list of photo URLs from the API
         let urlString = "https://picsum.photos/v2/list"
         guard let url = URL(string: urlString) else {
             print("Invalid URL")
@@ -269,6 +285,7 @@ class ViewController: UIViewController {
     }
     
     func getRandomPhoto() {
+        // Fetch and display a random photo
         let urlString = "https://picsum.photos/600"
         guard let url = URL(string: urlString) else {
             print("Invalid URL")
@@ -309,4 +326,3 @@ class ViewController: UIViewController {
         task.resume()
     }
 }
-
